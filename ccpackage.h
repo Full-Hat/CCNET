@@ -37,21 +37,21 @@ public:
 
     // Methods
     // Возвращает массив байтов пакета
-    vec_bytes get_bytes();
+    vec_bytes getBytes();
 
     // Возвращает строку шестнадцатиричного представления байтов пакета
-    std::string get_bytes_hex();
+    std::string getBytesHex();
 
     // Возвращает длину пакета
-    int get_length();
+    int getLength();
 
     // CRC или контрольная сумма пакета
-    vec_bytes getCRC16(vec_bytes bufData, int sizeData);
+    vec_bytes GetCRC16(vec_bytes bufData, int sizeData);
 
     // Проверка CRC
-    bool checkCRC16(vec_bytes buff);
+    bool ChechCRC16(vec_bytes buff);
 
-    vec_bytes create_response(validator_commands type);
+    vec_bytes createResponse(ValidatorCommands type);
 };
 
 #endif // CCPACKAGE_H

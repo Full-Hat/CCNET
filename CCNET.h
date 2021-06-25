@@ -7,13 +7,11 @@
 
 class port_CCNET {
 protected:
-    cash_code_protocol CCValidator;
+    CashCodeProtocol CCValidator;
     std::string port_path;
 
     // time settings (sec)
     const int delay_power_up = 5;
-    const int delay_start_listening = 10;
-    const int delay_stop_listening = 10;
 
 public:
     // try find port and return port path & errCode = 0, else errCode = -1
@@ -23,8 +21,8 @@ public:
 
     // make one iteration
     int listen_port();
-
-    int get_total_cash() const;
+    // make several iterations
+    int listen_port_for(const int sec);
 
     ~port_CCNET();
 };

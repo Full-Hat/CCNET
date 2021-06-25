@@ -2,7 +2,7 @@
 #define COMMANDS_H
 
 // Controller Commands
-enum class validator_commands : unsigned char
+enum class ValidatorCommands : unsigned char
 {
     ACK = 0x00,
     NAK = 0xFF,

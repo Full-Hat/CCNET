@@ -24,7 +24,7 @@ void CCPackage::set_data(vec_bytes data)
     this->m_data = data;
 }
 
-vec_bytes CCPackage::get_bytes()
+vec_bytes CCPackage::getBytes()
 {
     vec_bytes buffer;
 
@@ -36,7 +36,7 @@ vec_bytes CCPackage::get_bytes()
 
     // Байт 3: длина пакета
     // рассчитаем длину пакета
-    int length = this->get_length();
+    int length = this->getLength();
 
     // Если длина пакета вместе с байтами SYNC, ADR, LNG, CRC, CMD  больше 250
     if(length > 250) {
@@ -56,37 +56,37 @@ vec_bytes CCPackage::get_bytes()
             buffer.push_back(c);
 
     // Последний 2 Байта это CRC
-    vec_bytes CRC = this->getCRC16(buffer, buffer.size());
+    vec_bytes CRC = this->GetCRC16(buffer, buffer.size());
     buffer.insert(std::end(buffer), std::begin(CRC), std::end(CRC));
 
     return buffer;
 }
 
-int CCPackage::get_length()
+int CCPackage::getLength()
 {
     return this->m_data.size() + 6;
 }
 
-vec_bytes CCPackage::getCRC16(vec_bytes buf_data, int size_data)
+vec_bytes CCPackage::GetCRC16(vec_bytes bufData, int sizeData)
 {
-    unsigned int tmpCRC, CRC;
+    unsigned int TmpCRC, CRC;
     unsigned char j;
     CRC = 0;
-    for(int i=0; i < size_data; i++)
+    for(int i=0; i < sizeData; i++)
     {
-        tmpCRC = CRC ^ buf_data[i];
+        TmpCRC = CRC ^ bufData[i];
         for(j=0; j < 8; j++)
         {
-            if(tmpCRC & 0x0001)
+            if(TmpCRC & 0x0001)
             {
-                tmpCRC >>= 1; tmpCRC ^= POLYNOMIAL;
+                TmpCRC >>= 1; TmpCRC ^= POLYNOMIAL;
             }
             else
             {
-                tmpCRC >>= 1;
+                TmpCRC >>= 1;
             }
         }
-        CRC = tmpCRC;
+        CRC = TmpCRC;
     }
 
     vec_bytes v_CRC;
@@ -96,7 +96,7 @@ vec_bytes CCPackage::getCRC16(vec_bytes buf_data, int size_data)
     return v_CRC;
 }
 
-vec_bytes CCPackage::create_response(validator_commands type)
+vec_bytes CCPackage::createResponse(ValidatorCommands type)
 {
     // Буффер пакета (без 2-х байт CRC). Первые четыре байта это SYNC, ADR, LNG, CMD
     vec_bytes buffer;
@@ -111,12 +111,12 @@ vec_bytes CCPackage::create_response(validator_commands type)
     buffer.push_back(0x06);
 
     // Байт 4: Данные ответа
-    if(type == validator_commands::ACK)
+    if(type == ValidatorCommands::ACK)
         buffer.push_back(0x00);
-    else if(type == validator_commands::NAK)
+    else if(type == ValidatorCommands::NAK)
         buffer.push_back(0xFF);
 
-    vec_bytes CRC = this->getCRC16(buffer, buffer.size());
+    vec_bytes CRC = this->GetCRC16(buffer, buffer.size());
     buffer.insert(std::end(buffer), std::begin(CRC), std::end(CRC));
 
     return buffer;

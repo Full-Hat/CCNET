@@ -17,7 +17,7 @@ typedef unsigned char byte;
 
 typedef boost::shared_ptr<boost::asio::serial_port> serial_port_ptr;
 
-class serial_port {
+class SerialPort {
 private:
     serial_port_ptr p_port;
     boost::asio::io_service m_io_service;
@@ -33,11 +33,11 @@ private:
     void time_out(const boost::system::error_code& error);
 
 public:
-    std::string m_port_name;
-    int m_baud_rate;
+    std::string m_PortName;
+    int m_BaudRate;
 
-    serial_port(size_t timeout);
-    ~serial_port(void);
+    SerialPort(size_t timeout);
+    ~SerialPort(void);
 
     virtual bool start(const char *com_port_name, int baud_rate = 9600);
     virtual void stop();
@@ -46,7 +46,7 @@ public:
     bool read_char(unsigned char& val);
 
     // Read Data
-    vec_bytes read_line(void);
+    vec_bytes readLine(void);
 
     int write_data(vec_bytes buf);
     static std::string get_port_name(void);

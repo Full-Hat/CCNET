@@ -1,5 +1,5 @@
-#ifndef CASH_CODE_PROTOCOL_H
-#define CASH_CODE_PROTOCOL_H
+#ifndef CASHCODEPROTOCOL_H
+#define CASHCODEPROTOCOL_H
 
 #include <string>
 #include <vector>
@@ -13,19 +13,19 @@
 #include "cashcodeerrors.h"
 #include "ccpackage.h"
 
-class cash_code_protocol
+class CashCodeProtocol
 {
 private:
-    std::string m_com_port_name;
-    int m_last_error;
-    bool m_disposed;
-    bool m_is_connected;
-    bool m_is_power_up;
-    bool m_is_listening;
-    bool m_is_enable_bills;
-    bool m_return_bill;
-    serial_port *com_port;
-    CCPackage pack;
+    std::string m_ComPortName;
+    int m_LastError;
+    bool m_Disposed;
+    bool m_IsConnected;
+    bool m_IsPowerUp;
+    bool m_IsListening;
+    bool m_IsEnableBills;
+    bool m_ReturnBill;
+    SerialPort *ComPort;
+    CCPackage Pack;
 
     // Time-out ожидания ответа от считывателя
     const int POLL_TIMEOUT = 200;
@@ -38,47 +38,56 @@ private:
     vec_bytes SECURITY_CODE = { 0x00, 0x00, 0x00 };
 
     // Таблица кодов валют
-    int cash_code_table(byte code);
+    int CashCodeTable(byte code);
 
 public:
-    cash_code_protocol();
-    enum class bill_recieved_status { Accepted, Rejected };
-    enum class bill_cassette_status { Inplace, Removed };
+    CashCodeProtocol();
+    enum class BillRecievedStatus { Accepted, Rejected };
+    enum class BillCassetteStatus { Inplace, Removed };
 
-    bool is_connected();
+    bool IsConnected();
 
-    int m_cash_received;
+    int m_CashReceived;
 
-    vec_bytes send_command(validator_commands cmd, vec_bytes data = {});
+    // Отправка команды купюро приемнику
+    vec_bytes SendCommand(ValidatorCommands cmd, vec_bytes Data = {});
+                            
+    // Поиск порта, к которому подключен купюроприемник
+    std::string FindPort();
 
-    std::string find_port();
+    // Начало прослушки CashCode
+    void StartListening();
+
+    // Остановка прослушки CashCode
+    void StopListening();
 
     // Инициализация и открытие COM-порта для работы с CashCode
-    int connect_validator(std::string port_path);
+    int ConnectValidator(std::string portPath);
 
-    int power_up_validator();
+    // Включение CashCode
+    int PowerUpValidator();
 
     // Включение режима приема купюр
-    int enable_validator();
+    int EnableValidator();
 
     // Выключение режима приема купюр
-    int disable_validator();
+    int DisableValidator();
 
     // Проверка ответов купюро приемника на наличие ошибок
-    bool check_errors(vec_bytes &result) ;
+    bool CheckErrors(vec_bytes &result) ;
 
     // Enable sequence
     // Включение режима для приема купюр
-    int enable_sequence(void);
+    int EnableSequence(void);
 
     // Disable sequence
     // Выключение режима для приема купюр
-    int disable_sequence(void);
+    int DisableSequence(void);
 
     // Функция прослушка купюро приемника
-    int validator_listener();
+    void ValidatorListener();
 
     void print_b(std::string msg, vec_bytes);
 };
 
-#endif // cash_code_protocol_H
+#endif // CASHCODEPROTOCOL_H

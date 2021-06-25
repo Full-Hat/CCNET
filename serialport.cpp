@@ -1,13 +1,13 @@
 #include "serialport.h"
 
-void serial_port::read_complete(const boost::system::error_code &error, size_t bytes_transferred)
+void SerialPort::read_complete(const boost::system::error_code &error, size_t bytes_transferred)
 {
     read_error = (error || bytes_transferred == 0);
     // Read has finished, cancel the timer
     this->timer->cancel();
 }
 
-void serial_port::time_out(const boost::system::error_code &error)
+void SerialPort::time_out(const boost::system::error_code &error)
 {
     // Timeout was cancelled?
     if(error)
@@ -20,16 +20,16 @@ void serial_port::time_out(const boost::system::error_code &error)
     this->p_port->cancel();
 }
 
-serial_port::serial_port(size_t timeout) :
+SerialPort::SerialPort(size_t timeout) :
     timeout(timeout),
     read_error(true) {}
 
-serial_port::~serial_port(void)
+SerialPort::~SerialPort(void)
 {
     stop();
 }
 
-bool serial_port::start(const char *com_port_name, int baud_rate)
+bool SerialPort::start(const char *com_port_name, int baud_rate)
 {
     boost::system::error_code error_code;
 
@@ -59,7 +59,7 @@ bool serial_port::start(const char *com_port_name, int baud_rate)
     return true;
 }
 
-void serial_port::stop()
+void SerialPort::stop()
 {
     if(this->p_port)
     {
@@ -70,7 +70,7 @@ void serial_port::stop()
     this->m_io_service.reset();
 }
 
-bool serial_port::read_char(byte &val)
+bool SerialPort::read_char(byte &val)
 {
     val = c = '\n';
     // After a timeout & cancel it seems we need
@@ -79,14 +79,14 @@ bool serial_port::read_char(byte &val)
 
     // Asynchronously read 1 character.
     boost::asio::async_read(*this->p_port, boost::asio::buffer(&c, 1),
-                   boost::bind(&serial_port::read_complete,
+                   boost::bind(&SerialPort::read_complete,
                             this,
                             boost::asio::placeholders::error,
                             boost::asio::placeholders::bytes_transferred));
 
     // Setup a deadline time to implement our timeout.
     this->timer->expires_from_now(boost::posix_time::milliseconds(this->timeout));
-    this->timer->async_wait(boost::bind(&serial_port::time_out,
+    this->timer->async_wait(boost::bind(&SerialPort::time_out,
                                        this, boost::asio::placeholders::error));
     // This will block until a character is read
     // or until the it is cancelled.
@@ -98,7 +98,7 @@ bool serial_port::read_char(byte &val)
     return !read_error;
 }
 
-vec_bytes serial_port::read_line()
+vec_bytes SerialPort::readLine()
 {
     vec_bytes result;
 
@@ -117,7 +117,7 @@ vec_bytes serial_port::read_line()
     }
 }
 
-int serial_port::write_data(vec_bytes buf)
+int SerialPort::write_data(vec_bytes buf)
 {
     if(buf.size() == 0)
         return 0;
